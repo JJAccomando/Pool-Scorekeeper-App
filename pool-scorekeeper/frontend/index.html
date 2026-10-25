@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Pool Scorekeeper</title>
+  <link rel="stylesheet" href="styles2.css">
+</head>
+<body>
+
+  <!-- HOME SECTION -->
+  <div id="homeSection" class="section" style="display:block;">
+    <h1>Pool Scorekeeper</h1>
+    <button onclick="showNewGameMenu()">New Game</button>
+  </div>
+
+  <!-- NEW GAME MENU SECTION -->
+  <div id="newGameMenu" class="section">
+    <h2>Select Game Mode</h2>
+
+    <label>Game Mode:</label>
+    <select id="gameMode">
+      <option value="8ball">8-Ball</option>
+      <option value="9ball">9-Ball</option>
+    </select>
+
+    <br><br>
+
+    <button onclick="confirmGameMode()">Continue</button>
+  </div>
+
+  <!-- 8-BALL SETUP SECTION -->
+  <div id="eightBallSection" class="section">
+    <h2>8-Ball Game Setup</h2>
+     
+    <label>Enter Player 1 Name:</label><br>
+    <input type="text" id="player1Name" placeholder="Player 1"><br><br>
+
+    <label>Enter Player 2 Name:</label><br>
+    <input type="text" id="player2Name" placeholder="Player 2"><br><br>
+
+    <label>Race to:</label><br>
+    <input type="number" id="raceTo" min="1" placeholder="e.g., 5"><br><br>
+
+    <button onclick="startEightBallGame()">Start Match</button>
+  </div>
+
+  <!-- LAG WINNER SECTION -->
+  <div id="lagWinnerSection" class="section">
+    <h2>Who won the lag?</h2>
+
+    <button id="lagP1Btn" onclick="selectLagWinner('player1')"></button>
+    <button id="lagP2Btn" onclick="selectLagWinner('player2')"></button>
+
+    <br><br>
+
+    <button onclick="goBackToEightBallSetup()">Undo</button>
+  </div>
+
+  <!-- SCOREBOARD SECTION -->
+  <div id="scoreboardSection" class="section">
+
+    <h2 id="scoreboardTitle"></h2>
+    <h3 id="gameHeader"></h3>
+
+    <p>Race to: <span id="raceToDisplay"></span></p>
+    <p>Break: <span id="breakDisplay"></span></p>
+
+    <h3>Inning: <span id="inningDisplay">1</span></h3>
+
+    <div id="player1Box" class="playerBox">
+      <h3 id="p1Name"></h3>
+      <p>Score: <span id="p1Score">0</span></p>
+      <p>Defenses: <span id="p1Defense">0</span></p>
+    </div>
+
+    <div id="player2Box" class="playerBox">
+      <h3 id="p2Name"></h3>
+      <p>Score: <span id="p2Score">0</span></p>
+      <p>Defenses: <span id="p2Defense">0</span></p>
+    </div>
+
+    <br>
+
+    <button onclick="addDefense()">+ Defense</button>
+    <button onclick="nextShooter()">Next Shooter</button>
+    <button onclick="finishGame()">Finish Game</button>
+    <button onclick="undoAction()">Undo</button>
+
+  </div>
+
+  <!-- FINISH GAME MODAL -->
+  <div id="finishModal" class="section">
+    <h2>How did the game end?</h2>
+
+    <button onclick="endGame('win')">Made 8-ball (Win)</button>
+    <button onclick="endGame('scratch')">Made 8-ball but scratched (Loss)</button>
+
+    <br><br>
+    <button onclick="cancelFinish()">Cancel</button>
+  </div>
+
+  <!-- 9-BALL SECTION -->
+  <div id="nineBallSection" class="section">
+    <h2>9-Ball Game</h2>
+    <p>9-ball mode coming soon.</p>
+  </div>
+
+  <script src="app.js"></script>
+  <script src="8ball.js"></script>
+</body>
+</html>

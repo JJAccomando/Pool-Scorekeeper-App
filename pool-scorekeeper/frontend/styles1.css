@@ -1,0 +1,34 @@
+.section {
+  display: none;
+}
+
+.playerBox {
+  border: 2px solid #ccc;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 8px;
+}
+
+.activeShooter {
+  border-color: gold;
+  background-color: #fff8d1;
+  box-shadow: 0 0 10px gold;
+}
+
+button {
+  padding: 8px 12px;
+  margin: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#scoreboardSection {
+  margin-top: 20px;
+}
+
+#finishModal {
+  padding: 20px;
+  border: 2px solid #ccc;
+  background: #f9f9f9;
+  border-radius: 8px;
+}

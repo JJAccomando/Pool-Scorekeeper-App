@@ -1,0 +1,225 @@
+/* -------------------------
+   GLOBAL
+------------------------- */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
+
+  background-color: #f4f4f4;
+}
+
+
+/* -------------------------
+   APP SCREENS
+------------------------- */
+
+.section {
+  display: none;
+
+  width: 100%;
+  min-height: 100vh;
+
+  padding: 24px;
+
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+}
+
+
+/*
+When JavaScript changes a section to display:block,
+we still want it to behave like our centered screen.
+*/
+.section[style*="display: block"],
+.section[style*="display:block"] {
+  display: flex !important;
+}
+
+
+/* -------------------------
+   HEADINGS
+------------------------- */
+
+h1 {
+  font-size: 2.5rem;
+  margin: 0 0 30px;
+}
+
+h2 {
+  font-size: 2rem;
+  margin: 0 0 24px;
+}
+
+h3 {
+  margin: 10px 0;
+}
+
+
+/* -------------------------
+   BUTTONS
+------------------------- */
+
+button {
+  width: 100%;
+  max-width: 320px;
+
+  min-height: 52px;
+
+  padding: 12px 18px;
+  margin: 7px 0;
+
+  border: none;
+  border-radius: 10px;
+
+  font-size: 1.05rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  background-color: #262626;
+  color: white;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+
+/* -------------------------
+   INPUTS / SELECT
+------------------------- */
+
+input,
+select {
+  width: 100%;
+  max-width: 320px;
+
+  padding: 14px;
+
+  margin-top: 8px;
+
+  border: 1px solid #aaa;
+  border-radius: 8px;
+
+  font-size: 16px;
+
+  background: white;
+}
+
+label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+
+  margin-top: 12px;
+}
+
+
+/* -------------------------
+   SCOREBOARD
+------------------------- */
+
+#scoreboardSection {
+  justify-content: flex-start;
+
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+
+/* Player cards */
+
+.playerBox {
+  width: 100%;
+  max-width: 420px;
+
+  border: 3px solid #ccc;
+  border-radius: 14px;
+
+  padding: 16px;
+  margin: 8px 0;
+
+  background-color: white;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+/* Current shooter */
+
+.activeShooter {
+  border-color: #d5a900;
+  background-color: #fff8d1;
+
+  box-shadow: 0 0 12px rgba(213, 169, 0, 0.4);
+
+  transform: scale(1.02);
+}
+
+
+/* -------------------------
+   FINISH GAME
+------------------------- */
+
+#finishModal {
+  padding: 24px;
+}
+
+
+/* -------------------------
+   SMALL PHONES
+------------------------- */
+
+@media (max-width: 480px) {
+
+  .section {
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 2.2rem;
+  }
+
+  h2 {
+    font-size: 1.7rem;
+  }
+
+  button {
+    max-width: 100%;
+  }
+
+  input,
+  select {
+    max-width: 100%;
+  }
+
+  .playerBox {
+    max-width: 100%;
+  }
+}
