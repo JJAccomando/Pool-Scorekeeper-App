@@ -163,20 +163,36 @@ function cancelFinish() {
 function endGame(result) {
   const match = window.currentMatch;
 
-  let winner;
   if (result === "win") {
-    winner = match.currentShooter;
+    match.previousAction.push("win");
+    if (match.currentShooter === "player1") {
+      match.break = "player1";
+      match.scoreP1++;
+      document.getElementById("p1Score").innerText = match.scoreP1;
+    } else {
+      match.break = "player2";
+      match.scoreP2++;
+      document.getElementById("p2Score").innerText = match.scoreP2;
+    }
   } else {
-    winner = match.currentShooter === "player1" ? "player2" : "player1";
-  }
-
-  // Update score
-  if (winner === "player1") {
-    match.scoreP1++;
-    document.getElementById("p1Score").innerText = match.scoreP1;
-  } else {
-    match.scoreP2++;
-    document.getElementById("p2Score").innerText = match.scoreP2;
+    match.previousAction.push("loss");
+    if (match.currentShooter !== match.lagWinner) {
+      match.currentInning++;
+      document.getElementById("inningDisplay").innerText = match.currentInning;
+    }
+    if (match.currentShooter === "player1") {
+      match.break = "player2";
+      match.scoreP2++;
+      document.getElementById("p2Score").innerText = match.scoreP2;
+      match.currentShooter = "player2";
+      updateShooterHighlight();
+    } else {
+      match.break = "player1";
+      match.scoreP1++;
+      document.getElementById("p1Score").innerText = match.scoreP1;
+      match.currentShooter = "player1";
+      updateShooterHighlight();
+    }
   }
 
   // Check race-to
@@ -188,18 +204,11 @@ function endGame(result) {
   // Prepare next game
   match.currentGame++;
 
-  // BREAK GOES TO WINNER OF PREVIOUS GAME
-  match.break = winner;
-  match.currentShooter = match.break;
-
   // Update UI
   document.getElementById("gameHeader").innerText =
     `Game ${match.currentGame} of Race to ${match.raceTo}`;
 
-  document.getElementById("breakDisplay").innerText =
-    winner === "player1" ? match.player1 : match.player2;
-
-  updateShooterHighlight();
+  document.getElementById("breakDisplay").innerText = match.break === "player1" ? match.player1 : match.player2;
 
   hideAllSections();
   document.getElementById("scoreboardSection").style.display = "block";
@@ -242,6 +251,38 @@ function undoAction() {
         document.getElementById("inningDisplay").innerText = match.currentInning;
       }
       match.previousAction.pop();
-  } 
-
-}
+    } else if (match.previousAction[match.previousAction.length - 1] === "win") {
+        if (match.currentShooter === "player1") {
+          match.scoreP1--;
+          document.getElementById("p1Score").innerText = match.scoreP1;
+        } else {
+          match.scoreP2--;
+          document.getElementById("p2Score").innerText = match.scoreP2;
+        }
+        match.previousAction.pop();
+      } else if (match.previousAction[match.previousAction.length - 1] === "loss") {
+        if (match.currentShooter === "player1") {
+          match.scoreP1--;
+          document.getElementById("p1Score").innerText = match.scoreP1;
+          if (match.lagWinner === "player1") {
+            match.currentInning--;
+            document.getElementById("inningDisplay").innerText = match.currentInning;
+          }
+          match.currentShooter = "player2";
+          updateShooterHighlight();
+        } else {
+          match.scoreP2--;
+          document.getElementById("p2Score").innerText = match.scoreP2;
+            if (match.lagWinner === "player2") {
+              match.currentInning--;
+              document.getElementById("inningDisplay").innerText = match.currentInning;
+            }
+          match.currentShooter = "player1";
+          updateShooterHighlight();
+        }
+        match.currentGame--;
+        document.getElementById("gameHeader").innerText =
+          `Game ${match.currentGame} of Race to ${match.raceTo}`;
+        match.previousAction.pop();
+      }
+  }
