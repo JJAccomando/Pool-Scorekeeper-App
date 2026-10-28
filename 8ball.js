@@ -5,7 +5,7 @@ window.currentMatch = {
   player2: "",
   raceTo: 0,
   lagWinner: "",
-  break: "",
+  break: [],
   previousAction: ["none"],
   currentShooter: "",
   currentInning: 1,
@@ -50,7 +50,7 @@ function selectLagWinner(winner) {
   const match = window.currentMatch;
 
   match.lagWinner = winner;
-  match.break = winner;
+  match.break.push(winner);
   match.currentShooter = winner;
   match.currentInning = 1;
   match.currentGame = 1;
@@ -189,20 +189,20 @@ function endGame(result) {
   if (result === "loss") {
     if (match.currentShooter === "player1") {
       addPoint("player2");
-      match.break = "player2";
+      match.break.push("player2");
     } else {
       addPoint("player1");
-      match.break = "player1";
+      match.break.push("player1");
     }
     nextShooter();
     match.previousAction.push("loss");
   } else {
     if (match.currentShooter === "player1") {
       addPoint("player1");
-      match.break = "player1";
+      match.break.push("player1");
     } else {
       addPoint("player2");
-      match.break = "player2";
+      match.break.push("player2");
     }
     match.previousAction.push("win");
   }
@@ -220,7 +220,7 @@ function endGame(result) {
   document.getElementById("gameHeader").innerText =
     `Game ${match.currentGame} of Race to ${match.raceTo}`;
 
-  document.getElementById("breakDisplay").innerText = match.break === "player1" ? match.player1 : match.player2;
+  document.getElementById("breakDisplay").innerText = match.break[match.break.length - 1] === "player1" ? match.player1 : match.player2;
 
   hideAllSections();
   document.getElementById("scoreboardSection").style.display = "block";
@@ -256,6 +256,8 @@ function undoAction() {
     case "win":
       subtractPoint(match.currentShooter);
       match.previousAction.pop();
+      match.break.pop();
+      document.getElementById("breakDisplay").innerText = match.break[match.break.length - 1] === "player1" ? match.player1 : match.player2;
       break;
     case "loss":
       subtractPoint(match.currentShooter);
@@ -267,6 +269,8 @@ function undoAction() {
       updateShooterHighlight();
       match.shooterHighlightTally--;
       match.previousAction.pop();
+      match.break.pop();
+      document.getElementById("breakDisplay").innerText = match.break[match.break.length - 1] === "player1" ? match.player1 : match.player2;
       break;
   }
 }
