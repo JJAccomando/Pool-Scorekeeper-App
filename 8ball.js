@@ -9,6 +9,7 @@ window.currentMatch = {
   previousAction: ["none"],
   currentShooter: "",
   currentInning: 1,
+  shooterHighlightTally: 0,
   currentGame: 1,
   scoreP1: 0,
   scoreP2: 0,
@@ -53,7 +54,7 @@ function selectLagWinner(winner) {
   match.currentShooter = winner;
   match.currentInning = 1;
   match.currentGame = 1;
-
+  match.shooterHighlightTally = 0;
   match.scoreP1 = 0;
   match.scoreP2 = 0;
   match.defenseP1 = 0;
@@ -96,10 +97,7 @@ function updateShooterHighlight() {
 // NEXT SHOOTER + INNING LOGIC
 function nextShooter() {
   const match = window.currentMatch;
-
-  const previousShooter = match.currentShooter;
-  const previousInning = match.currentInning;
-  let inningIncreased = false;
+  match.shooterHighlightTally++;
 
   // Switch shooter
   match.currentShooter =
@@ -109,9 +107,8 @@ function nextShooter() {
   match.previousAction.push("nextShooter");
 
   // Inning logic: ONLY when turn returns to ORIGINAL lag winner
-  if (match.currentShooter === match.lagWinner) {
+  if (match.shooterHighlightTally % 2 === 0) {
     match.currentInning++;
-    inningIncreased = true;
     document.getElementById("inningDisplay").innerText = match.currentInning;
   }
 
@@ -132,18 +129,44 @@ function addDefense() {
 
   // Update previous action
   match.previousAction.push("defense");
+}
 
+function subtractDefense() {
+  const match = window.currentMatch;
+
+  if (match.currentShooter === "player1") {
+    match.defenseP1--;
+    document.getElementById("p1Defense").innerText = match.defenseP1;
+  } else {
+    match.defenseP2--;
+    document.getElementById("p2Defense").innerText = match.defenseP2;
+  }
+
+  // Update previous action
+  match.previousAction.pop();
 }
 
 // POINTS
 function addPoint(player) {
   const match = window.currentMatch;
 
-  if (player === "p1") {
+  if (player === "player1") {
     match.scoreP1++;
     document.getElementById("p1Score").innerText = match.scoreP1;
   } else {
     match.scoreP2++;
+    document.getElementById("p2Score").innerText = match.scoreP2;
+  }
+}
+
+function subtractPoint(player) {
+  const match = window.currentMatch;
+
+  if (player == "player1") {
+    match.scoreP1--;
+    document.getElementById("p1Score").innerText = match.scoreP1; 
+  } else {
+    match.scoreP2--;
     document.getElementById("p2Score").innerText = match.scoreP2;
   }
 }
@@ -163,36 +186,25 @@ function cancelFinish() {
 function endGame(result) {
   const match = window.currentMatch;
 
-  if (result === "win") {
-    match.previousAction.push("win");
+  if (result === "loss") {
     if (match.currentShooter === "player1") {
-      match.break = "player1";
-      match.scoreP1++;
-      document.getElementById("p1Score").innerText = match.scoreP1;
-    } else {
+      addPoint("player2");
       match.break = "player2";
-      match.scoreP2++;
-      document.getElementById("p2Score").innerText = match.scoreP2;
+    } else {
+      addPoint("player1");
+      match.break = "player1";
     }
-  } else {
+    nextShooter();
     match.previousAction.push("loss");
-    if (match.currentShooter !== match.lagWinner) {
-      match.currentInning++;
-      document.getElementById("inningDisplay").innerText = match.currentInning;
-    }
+  } else {
     if (match.currentShooter === "player1") {
-      match.break = "player2";
-      match.scoreP2++;
-      document.getElementById("p2Score").innerText = match.scoreP2;
-      match.currentShooter = "player2";
-      updateShooterHighlight();
-    } else {
+      addPoint("player1");
       match.break = "player1";
-      match.scoreP1++;
-      document.getElementById("p1Score").innerText = match.scoreP1;
-      match.currentShooter = "player1";
-      updateShooterHighlight();
+    } else {
+      addPoint("player2");
+      match.break = "player2";
     }
+    match.previousAction.push("win");
   }
 
   // Check race-to
@@ -223,66 +235,38 @@ function showMatchSummary() {
 function undoAction() {
   const match = window.currentMatch;
 
-  // Inning = 1 and no actions to undo
-  if (match.previousAction[match.previousAction.length - 1] === "none") {
-    hideAllSections();
-    document.getElementById("lagWinnerSection").style.display = "block";
-  }
-
-  
-  // Undo last action based on previousAction
-  if (match.previousAction[match.previousAction.length - 1] === "defense") {
-    if (match.currentShooter === "player1") {
-      match.defenseP1--;
-      document.getElementById("p1Defense").innerText = match.defenseP1;
-    } else if (match.currentShooter === "player2") {
-      match.defenseP2--;
-      document.getElementById("p2Defense").innerText = match.defenseP2;
-    }
-    match.previousAction.pop();
-  } else if (match.previousAction[match.previousAction.length - 1] === "nextShooter") {
-      if (match.currentShooter !== match.break) {
-        match.currentShooter = match.currentShooter === "player1" ? "player2" : "player1";
-        updateShooterHighlight();
-      } else {
-        match.currentShooter = match.currentShooter === "player1" ? "player2" : "player1";
-        updateShooterHighlight();
+  switch (match.previousAction[match.previousAction.length - 1]) {
+    case "none":
+      hideAllSections();
+      document.getElementById("lagWinnerSection").style.display = "block";
+      break;
+    case "defense":
+      subtractDefense();
+      break;
+    case "nextShooter":
+      if (match.shooterHighlightTally % 2 === 0) {
         match.currentInning--;
         document.getElementById("inningDisplay").innerText = match.currentInning;
       }
+      match.currentShooter = match.currentShooter === "player1" ? "player2" : "player1";
+      updateShooterHighlight();
+      match.shooterHighlightTally--;
       match.previousAction.pop();
-    } else if (match.previousAction[match.previousAction.length - 1] === "win") {
-        if (match.currentShooter === "player1") {
-          match.scoreP1--;
-          document.getElementById("p1Score").innerText = match.scoreP1;
-        } else {
-          match.scoreP2--;
-          document.getElementById("p2Score").innerText = match.scoreP2;
-        }
-        match.previousAction.pop();
-      } else if (match.previousAction[match.previousAction.length - 1] === "loss") {
-        if (match.currentShooter === "player1") {
-          match.scoreP1--;
-          document.getElementById("p1Score").innerText = match.scoreP1;
-          if (match.lagWinner === "player1") {
-            match.currentInning--;
-            document.getElementById("inningDisplay").innerText = match.currentInning;
-          }
-          match.currentShooter = "player2";
-          updateShooterHighlight();
-        } else {
-          match.scoreP2--;
-          document.getElementById("p2Score").innerText = match.scoreP2;
-            if (match.lagWinner === "player2") {
-              match.currentInning--;
-              document.getElementById("inningDisplay").innerText = match.currentInning;
-            }
-          match.currentShooter = "player1";
-          updateShooterHighlight();
-        }
-        match.currentGame--;
-        document.getElementById("gameHeader").innerText =
-          `Game ${match.currentGame} of Race to ${match.raceTo}`;
-        match.previousAction.pop();
+      break;
+    case "win":
+      subtractPoint(match.currentShooter);
+      match.previousAction.pop();
+      break;
+    case "loss":
+      subtractPoint(match.currentShooter);
+      if (match.currentShooter === match.lagWinner) {
+        match.currentInning--;
+        document.getElementById("inningDisplay").innerText = match.currentInning;
       }
+      match.currentShooter = match.currentShooter === "player1" ? "player2" : "player1";
+      updateShooterHighlight();
+      match.shooterHighlightTally--;
+      match.previousAction.pop();
+      break;
   }
+}
